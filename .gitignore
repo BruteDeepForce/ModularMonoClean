@@ -1,0 +1,12 @@
+**/bin/
+**/obj/
+.vscode/
+.idea/
+*.user
+*.suo
+*.cache
+.DS_Store
+Thumbs.db
+
+# secrets (istersen)
+# appsettings.Development.json
