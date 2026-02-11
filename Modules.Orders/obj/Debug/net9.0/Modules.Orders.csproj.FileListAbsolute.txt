@@ -1,0 +1,16 @@
+C:\Users\user\ModularMonoClean\Modules.Orders\bin\Debug\net9.0\Modules.Orders.deps.json
+C:\Users\user\ModularMonoClean\Modules.Orders\bin\Debug\net9.0\Modules.Orders.dll
+C:\Users\user\ModularMonoClean\Modules.Orders\bin\Debug\net9.0\Modules.Orders.pdb
+C:\Users\user\ModularMonoClean\Modules.Orders\bin\Debug\net9.0\Modules.Orders.Contracts.dll
+C:\Users\user\ModularMonoClean\Modules.Orders\bin\Debug\net9.0\Modules.Orders.Contracts.pdb
+C:\Users\user\ModularMonoClean\Modules.Orders\obj\Debug\net9.0\Modules.Orders.csproj.AssemblyReference.cache
+C:\Users\user\ModularMonoClean\Modules.Orders\obj\Debug\net9.0\Modules.Orders.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\ModularMonoClean\Modules.Orders\obj\Debug\net9.0\Modules.Orders.AssemblyInfoInputs.cache
+C:\Users\user\ModularMonoClean\Modules.Orders\obj\Debug\net9.0\Modules.Orders.AssemblyInfo.cs
+C:\Users\user\ModularMonoClean\Modules.Orders\obj\Debug\net9.0\Modules.Orders.csproj.CoreCompileInputs.cache
+C:\Users\user\ModularMonoClean\Modules.Orders\obj\Debug\net9.0\Modules.Orders.sourcelink.json
+C:\Users\user\ModularMonoClean\Modules.Orders\obj\Debug\net9.0\Modules..2A917B3A.Up2Date
+C:\Users\user\ModularMonoClean\Modules.Orders\obj\Debug\net9.0\Modules.Orders.dll
+C:\Users\user\ModularMonoClean\Modules.Orders\obj\Debug\net9.0\refint\Modules.Orders.dll
+C:\Users\user\ModularMonoClean\Modules.Orders\obj\Debug\net9.0\Modules.Orders.pdb
+C:\Users\user\ModularMonoClean\Modules.Orders\obj\Debug\net9.0\ref\Modules.Orders.dll
