@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Modules.Orders;
+using Modules.Tables;
 using Modules.Users;
 using Modules.Users.Infrastructure;
 
@@ -15,6 +16,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 //modülleri ekledim
 builder.Services.AddUserModule(builder.Configuration);
 builder.Services.AddOrderModule(builder.Configuration);
+builder.Services.AddTableModule(builder.Configuration);
 
 var app = builder.Build();
 

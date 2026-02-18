@@ -33,6 +33,7 @@ namespace Modules.Orders.Api
                 CreatedAtUtc = DateTime.UtcNow
             };
 
+            //db optimistic lock düşünülebilir, ancak bu örnekte basitçe ekleyip kaydediyoruz
             _db.Orders.Add(order);
             await _db.SaveChangesAsync();
 
