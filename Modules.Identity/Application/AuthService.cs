@@ -14,7 +14,9 @@ public interface IAuthService
     Task<ServiceResult<LoginResponse>> LoginAsync(LoginRequest request, CancellationToken ct);
     Task<ServiceResult<RefreshResponse>> RefreshAsync(RefreshRequest request, CancellationToken ct);
     Task<ServiceResult<ManagerCreateUserResponse>> ManagerCreateUserAsync(ManagerCreateUserRequest request, CancellationToken ct);
+    Task<ServiceResult<PhoneLoginResponse>> FirstPhoneLoginAsync(PhoneLoginRequest request, CancellationToken ct);
     Task<ServiceResult<PhoneLoginResponse>> PhoneLoginAsync(PhoneLoginRequest request, CancellationToken ct);
+    Task<ServiceResult<string>> SetPinAsync(SetPinRequest request, CancellationToken ct);
     Task<ServiceResult<string>> SeedRolesAsync();
 }
 
@@ -259,7 +261,7 @@ public sealed class AuthService : IAuthService
             verificationResult.VerificationSid));
     }
 
-    public async Task<ServiceResult<PhoneLoginResponse>> PhoneLoginAsync(PhoneLoginRequest request, CancellationToken ct)
+    public async Task<ServiceResult<PhoneLoginResponse>> FirstPhoneLoginAsync(PhoneLoginRequest request, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(request.Phone) || string.IsNullOrWhiteSpace(request.Code))
         {
@@ -295,6 +297,31 @@ public sealed class AuthService : IAuthService
             user.PhoneNumber,
             user.BranchId,
             roles.ToList()));
+    }
+
+    public async Task<ServiceResult<string>> SetPinAsync(SetPinRequest request, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(request.Phone)
+            || string.IsNullOrWhiteSpace(request.NewPin))
+        {
+            return ServiceResult<string>.Fail("Phone and new PIN are required.");
+        }
+
+        var user = await _userManager.Users
+            .FirstOrDefaultAsync(x => x.PhoneNumber == request.Phone, ct);
+        if (user is null || !user.IsActive)
+        {
+            return ServiceResult<string>.Fail("Unauthorized");
+        }
+
+        var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var resetResult = await _userManager.ResetPasswordAsync(user, resetToken, request.NewPin);
+        if (!resetResult.Succeeded)
+        {
+            return ServiceResult<string>.Fail(string.Join(", ", resetResult.Errors.Select(e => e.Description)));
+        }
+
+        return ServiceResult<string>.Ok("PIN updated successfully.");
     }
 
     public async Task<ServiceResult<string>> SeedRolesAsync()

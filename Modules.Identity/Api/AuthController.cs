@@ -83,10 +83,10 @@ public class AuthController : ControllerBase
         return Ok(result.Data);
     }
 
-    [HttpPost("phone-login")]
-    public async Task<IActionResult> PhoneLogin([FromBody] PhoneLoginRequest request, CancellationToken ct)
+    [HttpPost("phone-first-login")]
+    public async Task<IActionResult> PhoneFirstLogin([FromBody] PhoneLoginRequest request, CancellationToken ct)
     {
-        var result = await _authService.PhoneLoginAsync(request, ct);
+        var result = await _authService.FirstPhoneLoginAsync(request, ct);
         if (!result.Succeeded)
         {
             if (result.Error is "Unauthorized" or "Invalid or expired code.")
@@ -99,6 +99,24 @@ public class AuthController : ControllerBase
 
         return Ok(result.Data);
     }
+
+    [HttpPost("phone-set-pin")] //authorize olmalı yoksa herkes herkesin telefonuna pin koyabilir
+    public async Task<IActionResult> PhoneSetPin([FromBody] SetPinRequest request, CancellationToken ct)
+    {
+        var result = await _authService.SetPinAsync(request, ct);
+        if (!result.Succeeded)
+        {
+            if (result.Error is "Unauthorized")
+            {
+                return Unauthorized(result.Error);
+            }
+
+            return BadRequest(result.Error);
+        }
+
+        return Ok(result.Data);
+    }
+
 
     // DTOs moved to Modules.Identity.DTO
 }
