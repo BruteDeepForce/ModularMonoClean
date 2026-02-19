@@ -24,7 +24,7 @@ namespace Modules.Users.Infrastructure
             {
                 entity.HasKey(e => e.Id);
 
-                entity.Property(e => e.BranchId).IsRequired();
+                entity.Property(e => e.BranchId).IsRequired(false);
                 entity.Property(e => e.FullName).HasMaxLength(128).IsRequired();
                 entity.Property(e => e.Email).HasMaxLength(256).IsRequired();
                 entity.Property(e => e.Phone).HasMaxLength(32);

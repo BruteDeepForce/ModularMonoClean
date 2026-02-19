@@ -27,9 +27,13 @@ public sealed class JwtTokenService : IJwtTokenService
         {
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Email, user.Email ?? string.Empty),
-            new("branch_id", user.BranchId.ToString())
+            new(ClaimTypes.Email, user.Email ?? string.Empty)
         };
+
+        if (user.BranchId.HasValue)
+        {
+            claims.Add(new Claim("branch_id", user.BranchId.Value.ToString()));
+        }
 
         claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 

@@ -14,7 +14,7 @@ public static class IdentityModule
 {
     public static IServiceCollection AddIdentityModule(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
+    services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
 
         services.AddDbContext<AppIdentityDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
@@ -35,7 +35,10 @@ public static class IdentityModule
             .AddDefaultTokenProviders();
 
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IPhoneVerificationService, TwilioVerifyService>();
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+        services.AddScoped<ITenantAuthService, TenantAuthService>();
+        services.AddScoped<IAuthService, AuthService>();
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>

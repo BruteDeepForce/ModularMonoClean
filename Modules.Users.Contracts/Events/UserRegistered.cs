@@ -4,7 +4,7 @@ namespace Modules.Users.Contracts.Events;
 
 public record UserRegistered(
     Guid UserId,
-    Guid BranchId,
+    Guid? BranchId,
     string Email,
     string FullName,
     string? Phone,

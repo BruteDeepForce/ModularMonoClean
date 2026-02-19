@@ -28,7 +28,7 @@ public class UserRegisteredHandler : INotificationHandler<UserRegistered>
         var user = new User
         {
             Id = n.UserId,
-            BranchId = n.BranchId,
+            BranchId = n.BranchId ?? Guid.Empty,
             Email = n.Email,
             FullName = n.FullName,
             Phone = n.Phone,
