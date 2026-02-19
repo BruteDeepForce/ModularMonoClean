@@ -26,6 +26,7 @@ namespace Modules.Users.Api
             }
 
             var user = new User { Id = Guid.NewGuid(), BranchId = branchId, Email = req.Email, OrderCount = 0 };
+            user.CreatedAtUtc = DateTime.UtcNow;
             _db.Users.Add(user);
             await _db.SaveChangesAsync();
             return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);

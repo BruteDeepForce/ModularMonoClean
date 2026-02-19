@@ -37,6 +37,7 @@ namespace Modules.Orders.Api
                 Id = Guid.NewGuid(),
                 BranchId = branchId,
                 UserId = req.UserId,
+                OrderNo = $"ORD-{DateTime.UtcNow:yyyyMMddHHmmssfff}",
                 CreatedAtUtc = DateTime.UtcNow
             };
 

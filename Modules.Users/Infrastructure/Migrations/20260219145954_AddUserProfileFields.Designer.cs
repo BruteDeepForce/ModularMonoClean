@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Users.Infrastructure.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    [Migration("20260211201126_Init_Users")]
-    partial class Init_Users
+    [Migration("20260219145954_AddUserProfileFields")]
+    partial class AddUserProfileFields
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,6 +31,12 @@ namespace Modules.Users.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<Guid>("BranchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -65,14 +71,8 @@ namespace Modules.Users.Infrastructure.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)");
 
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<DateTime?>("UpdatedAtUtc")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("BranchId")
-                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
