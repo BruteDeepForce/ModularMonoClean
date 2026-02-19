@@ -100,7 +100,7 @@ public class AuthController : ControllerBase
         return Ok(result.Data);
     }
 
-    [HttpPost("phone-set-pin")] //authorize olmalı yoksa herkes herkesin telefonuna pin koyabilir
+    [HttpPost("phone-set-pin")] //authorize olmalı yoksa herkes herkesin telefonuna pin koyabilir. hatta direkt token claimdan phone number alıcaz
     public async Task<IActionResult> PhoneSetPin([FromBody] SetPinRequest request, CancellationToken ct)
     {
         var result = await _authService.SetPinAsync(request, ct);
