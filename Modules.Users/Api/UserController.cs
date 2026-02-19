@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modules.Users.Domain;
 using Modules.Users.Infrastructure;
+using System.Security.Claims;
 
 namespace Modules.Users.Api
 {
@@ -20,7 +20,12 @@ namespace Modules.Users.Api
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateUserRequest req)
         {
-            var user = new User { Id = Guid.NewGuid(), Email = req.Email, OrderCount = 0 };
+            if (!TryGetBranchId(out var branchId))
+            {
+                return Unauthorized("BranchId is required in claim (branch_id/branchId) or X-Branch-Id header.");
+            }
+
+            var user = new User { Id = Guid.NewGuid(), BranchId = branchId, Email = req.Email, OrderCount = 0 };
             _db.Users.Add(user);
             await _db.SaveChangesAsync();
             return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
@@ -29,10 +34,37 @@ namespace Modules.Users.Api
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var user = await _db.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            if (!TryGetBranchId(out var branchId))
+            {
+                return Unauthorized("BranchId is required in claim (branch_id/branchId) or X-Branch-Id header.");
+            }
+
+            var user = await _db.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id && x.BranchId == branchId);
             return user is null ? NotFound() : Ok(user);
         }
 
         public record CreateUserRequest(string Email);
+
+        private bool TryGetBranchId(out Guid branchId)
+        {
+            branchId = Guid.Empty;
+            var claimValue =
+                User.FindFirstValue("branch_id") ??
+                User.FindFirstValue("branchId");
+
+            if (string.IsNullOrWhiteSpace(claimValue))
+            {
+                if (!Request.Headers.TryGetValue("X-Branch-Id", out var headerValue))
+                {
+                    return false;
+                }
+
+                claimValue = headerValue.ToString();
+            }
+
+            return Guid.TryParse(claimValue, out branchId);
+        }
     }
 }

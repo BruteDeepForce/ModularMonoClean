@@ -8,6 +8,7 @@ namespace Modules.Users.Domain
     public class User
     {
         public Guid Id { get; set; }
+        public Guid BranchId { get; set; }
         public string Email { get; set; } = string.Empty;
         public int OrderCount { get; set; }
     }

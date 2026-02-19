@@ -38,7 +38,12 @@ namespace Modules.Users.Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasDefaultValue(0);
 
+                    b.Property<Guid>("BranchId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("BranchId", "Id");
 
                     b.ToTable("Users", "users");
                 });

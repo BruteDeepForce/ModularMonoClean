@@ -20,6 +20,7 @@ namespace Modules.Orders.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    BranchId = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -27,6 +28,12 @@ namespace Modules.Orders.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Orders", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_BranchId_UserId_CreatedAtUtc",
+                schema: "orders",
+                table: "Orders",
+                columns: new[] { "BranchId", "UserId", "CreatedAtUtc" });
         }
 
         /// <inheritdoc />

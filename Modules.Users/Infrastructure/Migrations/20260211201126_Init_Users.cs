@@ -20,6 +20,7 @@ namespace Modules.Users.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    BranchId = table.Column<Guid>(type: "uuid", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
                     OrderCount = table.Column<int>(type: "integer", nullable: false, defaultValue: 0)
                 },
@@ -27,6 +28,12 @@ namespace Modules.Users.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_BranchId_Id",
+                schema: "users",
+                table: "Users",
+                columns: new[] { "BranchId", "Id" });
         }
 
         /// <inheritdoc />

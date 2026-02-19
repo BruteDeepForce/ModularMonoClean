@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Modules.Identity\Modules.Identity.csproj" />
     <ProjectReference Include="..\Modules.Users\Modules.Users.csproj" />
     <ProjectReference Include="..\Modules.Users.Contracts\Modules.Users.Contracts.csproj" />
     <ProjectReference Include="..\Modules.Orders\Modules.Orders.csproj" />

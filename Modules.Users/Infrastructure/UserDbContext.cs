@@ -23,8 +23,10 @@ namespace Modules.Users.Infrastructure
             modelBuilder.Entity<Domain.User>(entity =>
             {
                 entity.HasKey(e => e.Id);
+                entity.Property(e => e.BranchId).IsRequired();
                 entity.Property(e => e.Email).IsRequired();
                 entity.Property(e => e.OrderCount).HasDefaultValue(0);
+                entity.HasIndex(e => new { e.BranchId, e.Id });
             });
         }
         

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Modules.Identity;
 using Modules.Orders;
 using Modules.Tables;
 using Modules.Users;
@@ -14,6 +15,7 @@ builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 //modülleri ekledim
+builder.Services.AddIdentityModule(builder.Configuration);
 builder.Services.AddUserModule(builder.Configuration);
 builder.Services.AddOrderModule(builder.Configuration);
 builder.Services.AddTableModule(builder.Configuration);
@@ -30,4 +32,3 @@ app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();
-

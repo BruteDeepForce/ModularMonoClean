@@ -20,8 +20,10 @@ namespace Modules.Orders.Infrastructure
             modelBuilder.Entity<Domain.Order>(entity =>
             {
                 entity.HasKey(e => e.Id);
+                entity.Property(e => e.BranchId).IsRequired();
                 entity.Property(e => e.UserId).IsRequired();
                 entity.Property(e => e.CreatedAtUtc).IsRequired();
+                entity.HasIndex(e => new { e.BranchId, e.UserId, e.CreatedAtUtc });
             });
         }
 

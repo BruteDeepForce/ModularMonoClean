@@ -16,7 +16,9 @@ namespace Modules.Users.Application
 
         public async Task Handle(OrderCreated n, CancellationToken ct)
         {
-            var user = await _db.Users.FirstOrDefaultAsync(x => x.Id == n.UserId, ct);
+            var user = await _db.Users.FirstOrDefaultAsync(
+                x => x.Id == n.UserId && x.BranchId == n.BranchId,
+                ct);
             if (user is null) return;
 
             user.OrderCount += 1;

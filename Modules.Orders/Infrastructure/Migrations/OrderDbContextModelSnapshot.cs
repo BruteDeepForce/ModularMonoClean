@@ -32,10 +32,15 @@ namespace Modules.Orders.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("BranchId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BranchId", "UserId", "CreatedAtUtc");
 
                     b.ToTable("Orders", "orders");
                 });

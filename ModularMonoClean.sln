@@ -13,9 +13,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modules.Orders", "Modules.O
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modules.Orders.Contracts", "Modules.Orders.Contracts\Modules.Orders.Contracts.csproj", "{59D990C1-B345-430E-9AB6-23151B367253}"
 EndProject
+<<<<<<< HEAD
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modules.Tables", "Modules.Tables\Modules.Tables.csproj", "{E6F7A0BB-89D5-41B9-9243-596C24BEF753}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modules.Tables.Contracts", "Modules.Tables.Contracts\Modules.Tables.Contracts.csproj", "{ADECDE24-23FD-42FC-844D-766C92AAB553}"
+=======
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modules.Identity", "Modules.Identity\Modules.Identity.csproj", "{1B962BB2-EF92-49D9-9232-5964F89BEFCA}"
+>>>>>>> bb7c7ac (wip: modular mono clean changes before rebase)
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +91,7 @@ Global
 		{59D990C1-B345-430E-9AB6-23151B367253}.Release|x64.Build.0 = Release|Any CPU
 		{59D990C1-B345-430E-9AB6-23151B367253}.Release|x86.ActiveCfg = Release|Any CPU
 		{59D990C1-B345-430E-9AB6-23151B367253}.Release|x86.Build.0 = Release|Any CPU
+<<<<<<< HEAD
 		{E6F7A0BB-89D5-41B9-9243-596C24BEF753}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E6F7A0BB-89D5-41B9-9243-596C24BEF753}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6F7A0BB-89D5-41B9-9243-596C24BEF753}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -111,6 +116,20 @@ Global
 		{ADECDE24-23FD-42FC-844D-766C92AAB553}.Release|x64.Build.0 = Release|Any CPU
 		{ADECDE24-23FD-42FC-844D-766C92AAB553}.Release|x86.ActiveCfg = Release|Any CPU
 		{ADECDE24-23FD-42FC-844D-766C92AAB553}.Release|x86.Build.0 = Release|Any CPU
+=======
+		{1B962BB2-EF92-49D9-9232-5964F89BEFCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B962BB2-EF92-49D9-9232-5964F89BEFCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B962BB2-EF92-49D9-9232-5964F89BEFCA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1B962BB2-EF92-49D9-9232-5964F89BEFCA}.Debug|x64.Build.0 = Debug|Any CPU
+		{1B962BB2-EF92-49D9-9232-5964F89BEFCA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1B962BB2-EF92-49D9-9232-5964F89BEFCA}.Debug|x86.Build.0 = Debug|Any CPU
+		{1B962BB2-EF92-49D9-9232-5964F89BEFCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B962BB2-EF92-49D9-9232-5964F89BEFCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B962BB2-EF92-49D9-9232-5964F89BEFCA}.Release|x64.ActiveCfg = Release|Any CPU
+		{1B962BB2-EF92-49D9-9232-5964F89BEFCA}.Release|x64.Build.0 = Release|Any CPU
+		{1B962BB2-EF92-49D9-9232-5964F89BEFCA}.Release|x86.ActiveCfg = Release|Any CPU
+		{1B962BB2-EF92-49D9-9232-5964F89BEFCA}.Release|x86.Build.0 = Release|Any CPU
+>>>>>>> bb7c7ac (wip: modular mono clean changes before rebase)
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
