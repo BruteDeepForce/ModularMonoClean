@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AssistOPOS Web App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="bg-layer"></div>
+
+  <main id="authScreen" class="auth-screen">
+    <section class="auth-card">
+      <div>
+        <p class="eyebrow">ASSISTOPOS</p>
+        <h1>Giris Yap</h1>
+        <p class="muted">Tenant, sube ve kullanici yonetimi tek panelde.</p>
+      </div>
+
+      <form id="loginForm" class="form-grid">
+        <label>
+          E-posta
+          <input required type="email" id="loginEmail" placeholder="yonetici@ornek.com" />
+        </label>
+        <label>
+          Sifre
+          <input required type="password" id="loginPassword" placeholder="******" />
+        </label>
+        <button type="submit" class="btn primary">Giris</button>
+      </form>
+
+      <div class="auth-footer">
+        <span id="authStatus" class="status-pill">Hazir</span>
+        <label class="switch-row">
+          <input id="apiMode" type="checkbox" />
+          <span>Gercek API modu</span>
+        </label>
+      </div>
+    </section>
+  </main>
+
+  <div id="appShell" class="app-shell hidden">
+    <aside class="side-nav">
+      <div class="brand">
+        <div class="logo-dot"></div>
+        <div>
+          <h2>ASSISTO POS</h2>
+          <small id="activeBranchLabel">ANA SUBE</small>
+        </div>
+      </div>
+
+      <nav>
+        <button class="nav-btn active">Dashboard</button>
+        <button class="nav-btn">Siparisler</button>
+        <button class="nav-btn">Masalar</button>
+        <button class="nav-btn">Musteriler</button>
+        <button class="nav-btn">Raporlar</button>
+      </nav>
+
+      <div class="side-actions">
+        <button id="openTenantPanel" class="btn ghost">Tenant Olustur</button>
+        <button id="openUserPanel" class="btn ghost">Kullanici Ekle</button>
+        <button id="logoutBtn" class="btn danger">Cikis</button>
+      </div>
+    </aside>
+
+    <section class="main-area">
+      <header class="top-bar">
+        <div class="time-box">
+          <strong id="clock">00:00:00</strong>
+          <small id="dateLabel">--</small>
+        </div>
+        <div class="top-right">
+          <span class="live-pill">AKTIF</span>
+          <span id="activeTenantLabel" class="tenant-pill">Tenant: -</span>
+        </div>
+      </header>
+
+      <div class="dashboard-grid">
+        <section class="left-quick">
+          <article class="tile large"><h3>Hizli Satis</h3></article>
+          <article class="tile large"><h3>Masa Plani</h3></article>
+          <article class="tile large"><h3>Tum Siparisler</h3></article>
+          <article class="tile large"><h3>Online Platform</h3></article>
+        </section>
+
+        <section class="center-panel">
+          <article class="hero-card">
+            <p class="eyebrow">AKTIF YAYIN</p>
+            <h1>assistopos</h1>
+            <p id="sessionInfo" class="muted">Session bilgisi bekleniyor...</p>
+          </article>
+
+          <div class="bottom-cards">
+            <article class="tile">Kurye Takip</article>
+            <article class="tile">Kasa Acilis</article>
+            <article class="tile">Kasa Devri</article>
+          </div>
+        </section>
+
+        <section class="right-actions">
+          <article class="tile action">Musteriler</article>
+          <article class="tile action">Rezervasyon</article>
+          <article class="tile action">Yonetim</article>
+          <article class="tile action">Stok Takibi</article>
+          <article class="tile action">Personel</article>
+          <article class="tile action">Kasa</article>
+          <article class="tile action">Sistem</article>
+          <article class="tile action">Raporlar</article>
+          <article class="tile action">Kampanyalar</article>
+          <article class="tile action">Platform Durumu</article>
+        </section>
+      </div>
+
+      <section class="management-layout">
+        <article class="panel">
+          <div class="panel-head">
+            <h3>Tenantlar</h3>
+            <button id="refreshTenants" class="btn xs">Yenile</button>
+          </div>
+          <ul id="tenantList" class="list"></ul>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h3>Subeler</h3>
+            <button id="refreshBranches" class="btn xs">Yenile</button>
+          </div>
+          <ul id="branchList" class="list"></ul>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h3>Kullanicilar</h3>
+            <button id="refreshUsers" class="btn xs">Yenile</button>
+          </div>
+          <ul id="userList" class="list"></ul>
+        </article>
+      </section>
+    </section>
+  </div>
+
+  <dialog id="tenantDialog" class="dialog">
+    <form id="tenantForm" method="dialog" class="dialog-form">
+      <h3>Yeni Tenant / Sirket</h3>
+      <label>Sirket Adi <input required id="tenantName" type="text" placeholder="Starbucks Turkiye" /></label>
+      <label>Ilk Sube Adi <input required id="branchName" type="text" placeholder="Kadikoy Subesi" /></label>
+      <label>Sube Kodu <input required id="branchCode" type="text" placeholder="KDY-01" /></label>
+      <div class="dialog-actions">
+        <button class="btn" value="cancel">Iptal</button>
+        <button class="btn primary" id="saveTenantBtn" value="default">Kaydet</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="userDialog" class="dialog">
+    <form id="userForm" method="dialog" class="dialog-form">
+      <h3>Sirket Altina Kullanici Ekle</h3>
+      <label>Ad Soyad <input required id="userFullName" type="text" /></label>
+      <label>Telefon <input required id="userPhone" type="text" placeholder="05xx..." /></label>
+      <label>E-posta <input id="userEmail" type="email" /></label>
+      <label>Rol
+        <select id="userRole">
+          <option value="waiter">waiter</option>
+          <option value="cashier">cashier</option>
+          <option value="manager">manager</option>
+          <option value="director">director</option>
+          <option value="chef">chef</option>
+          <option value="stockmanager">stockmanager</option>
+        </select>
+      </label>
+      <label>Branch
+        <select id="userBranchSelect"></select>
+      </label>
+      <label>Pin (opsiyonel)
+        <input id="userPin" type="password" maxlength="6" placeholder="1234" />
+      </label>
+      <div class="dialog-actions">
+        <button class="btn" value="cancel">Iptal</button>
+        <button class="btn primary" id="saveUserBtn" value="default">Kaydet</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="./app.js"></script>
+</body>
+</html>

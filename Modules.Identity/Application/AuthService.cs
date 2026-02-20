@@ -16,7 +16,7 @@ public interface IAuthService
     Task<ServiceResult<ManagerCreateUserResponse>> ManagerCreateUserAsync(ManagerCreateUserRequest request, CancellationToken ct);
     Task<ServiceResult<PhoneLoginResponse>> FirstPhoneLoginAsync(PhoneLoginRequest request, CancellationToken ct);
     Task<ServiceResult<PhoneLoginResponse>> PhoneLoginAsync(PhoneLoginRequest request, CancellationToken ct);
-    Task<ServiceResult<string>> SetPinAsync(SetPinRequest request, CancellationToken ct);
+    Task<ServiceResult<string>> SetPinAsync(SetPinRequest request, Guid userId, CancellationToken ct);
     Task<ServiceResult<string>> SeedRolesAsync();
 }
 
@@ -128,7 +128,7 @@ public sealed class AuthService : IAuthService
 
         var roles = await _userManager.GetRolesAsync(user);
         var accessToken = _jwtTokenService.CreateAccessToken(user, roles);
-        var refreshToken = await CreateAndPersistRefreshToken(user, CancellationToken.None);
+        var refreshToken = await _jwtTokenService.CreateAndPersistRefreshToken(user, CancellationToken.None);
 
         return ServiceResult<LoginResponse>.Ok(new LoginResponse(
             accessToken,
@@ -225,6 +225,14 @@ public sealed class AuthService : IAuthService
             CreatedAtUtc = DateTime.UtcNow
         };
 
+        // kullanıcı oluşturulmadan önce doğrulama kodu gönderelim, böylece geçersiz telefon numaralarına sahip kullanıcılar oluşmaz
+        var verificationResult = await _phoneVerificationService.SendCodeAsync(user.PhoneNumber ?? string.Empty, ct);
+        if (!verificationResult.Succeeded)
+        {
+            await _userManager.DeleteAsync(user);
+            return ServiceResult<ManagerCreateUserResponse>.Fail(verificationResult.Error ?? "Failed to send verification code.");
+        }
+
         var createResult = await _userManager.CreateAsync(user, "Temp123");
         if (!createResult.Succeeded)
         {
@@ -246,13 +254,6 @@ public sealed class AuthService : IAuthService
                 request.PinHash),
             ct);
 
-        var verificationResult = await _phoneVerificationService.SendCodeAsync(user.PhoneNumber ?? string.Empty, ct);
-        if (!verificationResult.Succeeded)
-        {
-            await _userManager.DeleteAsync(user);
-            return ServiceResult<ManagerCreateUserResponse>.Fail(verificationResult.Error ?? "Failed to send verification code.");
-        }
-
         return ServiceResult<ManagerCreateUserResponse>.Ok(new ManagerCreateUserResponse(
             user.Id,
             user.PhoneNumber,
@@ -263,7 +264,7 @@ public sealed class AuthService : IAuthService
 
     public async Task<ServiceResult<PhoneLoginResponse>> FirstPhoneLoginAsync(PhoneLoginRequest request, CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(request.Phone) || string.IsNullOrWhiteSpace(request.Code))
+        if (string.IsNullOrWhiteSpace(request.Phone) || string.IsNullOrWhiteSpace(request.Pin))
         {
             return ServiceResult<PhoneLoginResponse>.Fail("Phone and code are required.");
         }
@@ -275,7 +276,7 @@ public sealed class AuthService : IAuthService
             return ServiceResult<PhoneLoginResponse>.Fail("Unauthorized");
         }
 
-        var verificationResult = await _phoneVerificationService.CheckCodeAsync(request.Phone, request.Code, ct);
+        var verificationResult = await _phoneVerificationService.CheckCodeAsync(request.Phone, request.Pin, ct);
         if (!verificationResult.Succeeded)
         {
             return ServiceResult<PhoneLoginResponse>.Fail("Invalid or expired code.");
@@ -283,7 +284,7 @@ public sealed class AuthService : IAuthService
 
         var roles = await _userManager.GetRolesAsync(user);
         var accessToken = _jwtTokenService.CreateAccessToken(user, roles);
-        var refreshToken = await CreateAndPersistRefreshToken(user, ct);
+        var refreshToken = await _jwtTokenService.CreateAndPersistRefreshToken(user, ct);
         
 
     await _identityDbContext.SaveChangesAsync(ct);
@@ -299,7 +300,7 @@ public sealed class AuthService : IAuthService
             roles.ToList()));
     }
 
-    public async Task<ServiceResult<string>> SetPinAsync(SetPinRequest request, CancellationToken ct)
+    public async Task<ServiceResult<string>> SetPinAsync(SetPinRequest request, Guid userId, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(request.Phone)
             || string.IsNullOrWhiteSpace(request.NewPin))
@@ -308,7 +309,7 @@ public sealed class AuthService : IAuthService
         }
 
         var user = await _userManager.Users
-            .FirstOrDefaultAsync(x => x.PhoneNumber == request.Phone, ct);
+            .FirstOrDefaultAsync(x => x.PhoneNumber == request.Phone && x.Id == userId, ct);
         if (user is null || !user.IsActive)
         {
             return ServiceResult<string>.Fail("Unauthorized");
@@ -322,6 +323,41 @@ public sealed class AuthService : IAuthService
         }
 
         return ServiceResult<string>.Ok("PIN updated successfully.");
+    }
+
+    public async Task<ServiceResult<PhoneLoginResponse>> PhoneLoginAsync(PhoneLoginRequest request, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(request.Phone) || string.IsNullOrWhiteSpace(request.Pin))
+        {
+            return ServiceResult<PhoneLoginResponse>.Fail("Phone and PIN are required.");
+        }
+
+        var user = await _userManager.Users
+            .FirstOrDefaultAsync(x => x.PhoneNumber == request.Phone, ct);
+        if (user is null || !user.IsActive)
+        {
+            return ServiceResult<PhoneLoginResponse>.Fail("Unauthorized");
+        }
+
+        var signInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Pin, lockoutOnFailure: false);
+        if (!signInResult.Succeeded)
+        {
+            return ServiceResult<PhoneLoginResponse>.Fail("Unauthorized");
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var accessToken = _jwtTokenService.CreateAccessToken(user, roles);
+        var refreshToken = await _jwtTokenService.CreateAndPersistRefreshToken(user, ct);
+
+        return ServiceResult<PhoneLoginResponse>.Ok(new PhoneLoginResponse(
+            accessToken,
+            refreshToken,
+            "Bearer",
+            _jwtOptions.AccessTokenMinutes,
+            user.Id,
+            user.PhoneNumber,
+            user.BranchId,
+            roles.ToList()));
     }
 
     public async Task<ServiceResult<string>> SeedRolesAsync()
@@ -347,22 +383,4 @@ public sealed class AuthService : IAuthService
         return ServiceResult<string>.Ok("Roles seeded successfully.");
     }
 
-    private async Task<string> CreateAndPersistRefreshToken(ApplicationUser user, CancellationToken cancellationToken)
-    {
-        var refreshToken = _refreshTokenService.GenerateToken();
-        var refreshTokenHash = _refreshTokenService.HashToken(refreshToken);
-
-        _identityDbContext.RefreshTokens.Add(new RefreshToken
-        {
-            Id = Guid.NewGuid(),
-            UserId = user.Id,
-            BranchId = user.BranchId ?? Guid.Empty,
-            TokenHash = refreshTokenHash,
-            CreatedAtUtc = DateTime.UtcNow,
-            ExpiresAtUtc = DateTime.UtcNow.AddDays(_jwtOptions.RefreshTokenDays)
-        });
-
-        await _identityDbContext.SaveChangesAsync(cancellationToken);
-        return refreshToken;
-    }
 }

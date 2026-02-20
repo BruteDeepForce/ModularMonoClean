@@ -10,15 +10,21 @@ namespace Modules.Identity.Application;
 public interface IJwtTokenService
 {
     string CreateAccessToken(ApplicationUser user, IEnumerable<string> roles);
+    Task<string> CreateAndPersistRefreshToken(ApplicationUser user, CancellationToken cancellationToken);
 }
 
 public sealed class JwtTokenService : IJwtTokenService
 {
     private readonly JwtOptions _options;
+    private readonly IRefreshTokenService _refreshTokenService;
+    private readonly AppIdentityDbContext _identityDbContext;
 
-    public JwtTokenService(IOptions<JwtOptions> options)
+
+    public JwtTokenService(IOptions<JwtOptions> options, IRefreshTokenService refreshTokenService, AppIdentityDbContext identityDbContext)
     {
         _options = options.Value;
+        _refreshTokenService = refreshTokenService;
+        _identityDbContext = identityDbContext;
     }
 
     public string CreateAccessToken(ApplicationUser user, IEnumerable<string> roles)
@@ -48,5 +54,23 @@ public sealed class JwtTokenService : IJwtTokenService
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+        public async Task<string> CreateAndPersistRefreshToken(ApplicationUser user, CancellationToken cancellationToken)
+    {
+        var refreshToken = _refreshTokenService.GenerateToken();
+        var refreshTokenHash = _refreshTokenService.HashToken(refreshToken);
+
+        _identityDbContext.RefreshTokens.Add(new RefreshToken
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            BranchId = user.BranchId ?? Guid.Empty,
+            TokenHash = refreshTokenHash,
+            CreatedAtUtc = DateTime.UtcNow,
+            ExpiresAtUtc = DateTime.UtcNow.AddDays(_options.RefreshTokenDays)
+        });
+
+        await _identityDbContext.SaveChangesAsync(cancellationToken);
+        return refreshToken;
     }
 }

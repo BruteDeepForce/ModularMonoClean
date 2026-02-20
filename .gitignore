@@ -10,3 +10,5 @@ Thumbs.db
 
 # secrets (istersen)
 # appsettings.Development.json
+Host.Api/appsettings.Development.json
+Host.Api/appsettings.json

@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Modules.Identity.Application;
@@ -101,9 +103,32 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("phone-set-pin")] //authorize olmalı yoksa herkes herkesin telefonuna pin koyabilir. hatta direkt token claimdan phone number alıcaz
+    [Authorize]
     public async Task<IActionResult> PhoneSetPin([FromBody] SetPinRequest request, CancellationToken ct)
     {
-        var result = await _authService.SetPinAsync(request, ct);
+        var userid = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                     ?? User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+        if (userid is null)
+        {
+            return Unauthorized();
+        }
+        var result = await _authService.SetPinAsync(request, Guid.Parse(userid), ct);
+        if (!result.Succeeded)
+        {
+            if (result.Error is "Unauthorized")
+            {
+                return Unauthorized(result.Error);
+            }
+
+            return BadRequest(result.Error);
+        }
+
+        return Ok(result.Data);
+    }
+    [HttpPost("phone-login")]
+    public async Task<IActionResult> PhoneLogin([FromBody] PhoneLoginRequest request, CancellationToken ct)
+    {
+        var result = await _authService.PhoneLoginAsync(request, ct);
         if (!result.Succeeded)
         {
             if (result.Error is "Unauthorized")
@@ -117,6 +142,4 @@ public class AuthController : ControllerBase
         return Ok(result.Data);
     }
 
-
-    // DTOs moved to Modules.Identity.DTO
 }

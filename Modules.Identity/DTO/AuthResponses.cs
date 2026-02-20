@@ -40,3 +40,10 @@ public sealed record PhoneLoginResponse(
     string? PhoneNumber,
     Guid? BranchId,
     IReadOnlyCollection<string> Roles);
+
+public sealed record CreateTenantResponse(
+     string AccessToken,
+    string RefreshToken,
+    string TokenType,
+    int ExpiresInMinutes,
+    Guid Id);

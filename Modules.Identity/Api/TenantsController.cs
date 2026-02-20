@@ -43,29 +43,12 @@ public class TenantsController : ControllerBase
         }
         
         var result = await _tenantAuthService.CreateTenant(request, Guid.Parse(userId), ct);
-        if (result != null)
+        if (result is null || !result.Succeeded)
         {
-            return BadRequest(result);
+            return BadRequest(result.Error);
         }
 
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user is null)
-        {
-            return Unauthorized();
-        }
-
-        var roles = await _userManager.GetRolesAsync(user);
-        var accessToken = _jwtTokenService.CreateAccessToken(user, roles);
-
-        return Ok(new
-        {
-            AccessToken = accessToken,
-            TokenType = "Bearer",
-            user.Id,
-            user.Email,
-            user.BranchId,
-            Roles = roles
-        });
+        return Ok(result.Data);
     }
 
     [HttpGet("{id:guid}")]

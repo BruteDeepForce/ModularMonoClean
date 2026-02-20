@@ -22,6 +22,6 @@ public sealed record ManagerCreateUserRequest(
     string? Role,
     string? PinHash);
 
-public sealed record PhoneLoginRequest(string Phone, string Code);
+public sealed record PhoneLoginRequest(string Phone, string Pin);
 
 public sealed record SetPinRequest(string Phone, string NewPin);
